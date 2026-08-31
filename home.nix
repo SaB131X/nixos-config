@@ -6,8 +6,6 @@
   programs = {
     git = {
       enable = true;
-      userName = "SaB131X";
-      userEmail = "sea1024wm@gmail.com";
       extraConfig.init.defaultBranch = "main";
     };
     gh = {
