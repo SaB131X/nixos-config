@@ -25,6 +25,11 @@
     "vm.vfs_cache_pressure" = 50;
   };
 
+  hardware.bluetooth = {
+    enable = true;
+    powerOnBoot = true;
+  };
+
   networking = {
     hostName = "nixos";
     # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
