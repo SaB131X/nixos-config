@@ -165,7 +165,7 @@
 
     
     # KDE Utils
-    kdePackages.discover
+    kdePackages.bluedevil
     kdePackages.kcalc
     kdePackages.kcharselect
     kdePackages.kclock
