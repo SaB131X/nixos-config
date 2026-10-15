@@ -112,12 +112,24 @@
     isNormalUser = true;
     description = "SaB131X";
     extraGroups = [ "networkmanager" "wheel" ];
+    shell = pkgs.zsh;
   };
 
+  home-manager.users."sab131x" = { ... }: {
+    imports = [
+      inputs.nixdatifier.homeManagerModules.default
+    ];
+    programs.nixdatifier = { 
+      enable = true;   
+      autostart = true;
+    };
+  };
   # Install firefox.
   programs = {
     firefox.enable = true;
     firejail.enable = true;
+    direnv.enable = true;
+    zsh.enable = true;
   };
 
   # Allow unfree packages
@@ -155,13 +167,10 @@
     git
     # SDKs
     dotnet-sdk_10
-    ruby
     # LSPs
     nil
     csharp-ls
-    ruby-lsp
     # IDE
-    # pulsar
 
     
     # KDE Utils

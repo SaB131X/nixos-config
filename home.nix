@@ -6,32 +6,116 @@
   programs = {
     git = {
       enable = true;
-      userName = "SaB131X";
-      userEmail = "sea1024wm@gmail.com";
-      extraConfig.init.defaultBranch = "main";
+      settings = {
+        user = {
+          name = "SaB131X";
+          email = "sea1024wm@gmail.com";
+        };
+        init = {
+          defaultBranch = "main";
+        };
+      };
     };
     gh = {
       enable = true;
-      # settings.git_protocol = "https";
-      # gitCredentialHelper = {
-      #   enable = true;
-      #   hosts = [ "github.com" ];
-      # };
     };
     yazi = {
       enable = true;
-      plugins = {
-        git = pkgs.yaziPlugins.git;
+      plugins = with pkgs.yaziPlugins; {
+        git.package = git;
+        
       };
     };
     btop.enable = true;
     bash = {
       enable = true;
+      initExtra = ''
+        if [ -f "$HOME/.nix-profile/etc/profile.d/hm-session-vars.sh" ]; then
+          source "$HOME/.nix-profile/etc/profile.d/hm-session-vars.sh"
+        fi
+      '';
+    };
+    zsh = {
+      enable = true;
+      enableCompletion = true;
+      autosuggestion = {
+        enable = true;
+      };
+      fastSyntaxHighlighting = {
+        enable = true;
+        theme = "default";
+      };
+      oh-my-zsh = {
+        enable = true;
+      };
+      initContent = ''
+        if [ -f "$HOME/.nix-profile/etc/profile.d/hm-session-vars.sh" ]; then
+          source "$HOME/.nix-profile/etc/profile.d/hm-session-vars.sh"
+        fi
+      ''; 
+    };
+    atuin = {
+      enable = true;
+      enableZshIntegration = true;
+      enableBashIntegration = true;
+      settings = {
+        auto_sync = true;
+        sync_frequency = "15m";
+        search_mode = "fuzzy";
+      };
+    };
+    starship = {
+      enable = true;
+      enableZshIntegration = true;
+      settings = {
+        format = "$nix_shell \\[$username@$hostname:$directory\\] $git_branch$git_status";
+        add_newline = false;
+        nix_shell = {
+          format = "[$symbol]($style)";
+          symbol = "\\[nix-shell\\]";
+          style = "bold bold";
+        };
+        username = {
+          style_user = "bold bold";
+          show_always = true;
+          format = "$user";
+        };
+        hostname = {
+          style = "bold bold";
+          ssh_only = false;
+          format = "$hostname";
+        };
+        directory = {
+          style = "bold bold";
+          format = "$path";
+          truncation_length = 0;
+          truncate_to_repo = true;
+        };
+        git_branch = {
+          format = "[$branch]($style) ";
+          style = "bold purple";
+        };
+        git_status = {
+          format = "[$all_status$ahead_behind]($style) ";
+          style = "bold red";
+        };
+      };
+    };
+    ghostty = {
+      enable = true;
+      enableZshIntegration = true;
+      enableBashIntegration = true;
+      systemd.enable = true;
+      settings = {
+        background-opacity = 0.67;
+        shell-integration-features = "ssh-env,ssh-terminfo";
+      };
     };
     direnv = {
       enable = true;
       nix-direnv.enable = true;
       enableBashIntegration = true;
+      enableZshIntegration = true;
     };
   };
   home.stateVersion = "26.05";
