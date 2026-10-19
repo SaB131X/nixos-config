@@ -23,17 +23,11 @@
       enable = true;
       plugins = with pkgs.yaziPlugins; {
         git.package = git;
-        
       };
     };
     btop.enable = true;
     bash = {
       enable = true;
-      initExtra = ''
-        if [ -f "$HOME/.nix-profile/etc/profile.d/hm-session-vars.sh" ]; then
-          source "$HOME/.nix-profile/etc/profile.d/hm-session-vars.sh"
-        fi
-      '';
     };
     zsh = {
       enable = true;
@@ -48,11 +42,6 @@
       oh-my-zsh = {
         enable = true;
       };
-      initContent = ''
-        if [ -f "$HOME/.nix-profile/etc/profile.d/hm-session-vars.sh" ]; then
-          source "$HOME/.nix-profile/etc/profile.d/hm-session-vars.sh"
-        fi
-      ''; 
     };
     atuin = {
       enable = true;
@@ -107,15 +96,9 @@
       enableBashIntegration = true;
       systemd.enable = true;
       settings = {
-        background-opacity = 0.67;
-        shell-integration-features = "ssh-env,ssh-terminfo";
+        background-opacity = 0.73;
+        # shell-integration-features = "ssh-env,ssh-terminfo";
       };
-    };
-    direnv = {
-      enable = true;
-      nix-direnv.enable = true;
-      enableBashIntegration = true;
-      enableZshIntegration = true;
     };
   };
   home.stateVersion = "26.05";

@@ -7,11 +7,18 @@
     ];
 
   # Bootloader.
-  boot.loader.systemd-boot.enable = true;
-  boot.loader.efi.canTouchEfiVariables = true;
-
-  # Use latest kernel.
-  boot.kernelPackages = pkgs.linuxPackages_latest;
+  boot = {
+    loader = {
+      systemd-boot.enable = true;
+      efi.canTouchEfiVariables = true;
+    };
+    # Use latest kernel.
+    kernelPackages = pkgs.linuxPackages_latest;
+    kernel.sysctl = {
+      "vm.swappiness" = 180;
+      "vm.vfs_cache_pressure" = 50;
+    };
+  };
 
   # ZRAM setup
   zramSwap = {
@@ -20,10 +27,6 @@
     algorithm = "lz4";
     memoryPercent = 50;
   };
-  boot.kernel.sysctl = {
-    "vm.swappiness" = 180;
-    "vm.vfs_cache_pressure" = 50;
-  };
 
   hardware.bluetooth = {
     enable = true;
@@ -31,18 +34,14 @@
   };
 
   networking = {
-    hostName = "nixos";
+    hostName = "nixltp";
     # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
-
-
-    # Enable networking
     networkmanager.enable = true;
     firewall = {
       enable = true;
       allowedTCPPorts = [ 3389 ];
       allowedUDPPorts = [ 24832 3389 ];
     };
-
     # WG Quick / WG client
     wg-quick.interfaces.wg0 = {
       configFile = "/etc/wireguard/laptop.conf";
@@ -89,23 +88,22 @@
   services.printing.enable = true;
 
   # Enable sound with pipewire.
-  services.pulseaudio.enable = false;
   security.rtkit.enable = true;
-  services.pipewire = {
-    enable = true;
-    alsa.enable = true;
-    alsa.support32Bit = true;
-    pulse.enable = true;
+  services = {
+    pulseaudio.enable = false;
+    pipewire = {
+      enable = true;
+      alsa.enable = true;
+      alsa.support32Bit = true;
+      pulse.enable = true;
+    };
+  };
     # If you want to use JACK applications, uncomment this
     #jack.enable = true;
 
     # use the example session manager (no others are packaged yet so this is enabled by default,
     # no need to redefine it in your config for now)
     #media-session.enable = true;
-  };
-
-  # Enable touchpad support (enabled default in most desktopManager).
-  # services.xserver.libinput.enable = true;
 
   # Define a user account. Don't forget to set a password with ‘passwd’.
   users.users."sab131x" = {
@@ -124,11 +122,15 @@
       autostart = true;
     };
   };
-  # Install firefox.
   programs = {
     firefox.enable = true;
     firejail.enable = true;
-    direnv.enable = true;
+    direnv = {
+      enable = true;
+      nix-direnv.enable = true;
+      enableBashIntegration = true;
+      enableZshIntegration = true;
+    };
     zsh.enable = true;
   };
 
@@ -156,44 +158,44 @@
         "nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs="
         "yazi.cachix.org-1:Dcdz63NZKfvUCbDGngQDAZq6kOroIrFoyO064uvLh8k="
       ];
+      experimental-features = [ "nix-command" "flakes" ];
     };
   };
 
-  # List packages installed in system profile. To search, run:
-  # $ nix search wget
-  environment.systemPackages = with pkgs; [
-    nh
-    # DEV
-    git
-    # SDKs
-    dotnet-sdk_10
-    # LSPs
-    nil
-    csharp-ls
-    # IDE
+  environment = {
+    systemPackages = with pkgs; [
+      nh
+      # DEV
+      git
+      # SDKs
+      dotnet-sdk_10
+      # LSPs
+      nil
+      csharp-ls
+      # IDE
 
-    
-    # KDE Utils
-    kdePackages.bluedevil
-    kdePackages.kcalc
-    kdePackages.kcharselect
-    kdePackages.kclock
-    kdePackages.ksystemlog
-    kdePackages.sddm-kcm
-    # kdePackages.krdp
-    kdiff3
-    # clipboards
-    # wayland-utils
-    wl-clipboard
-    xclip
-    xdg-desktop-portal
-  ];
-  environment.plasma6.excludePackages = with pkgs; [
-    kdePackages.kpat
-    kdePackages.kmines
-    kdePackages.kmahjongg
-    kdePackages.ksudoku
-  ];
+      # KDE Utils
+      kdePackages.bluedevil
+      kdePackages.kcalc
+      kdePackages.kcharselect
+      kdePackages.kclock
+      kdePackages.ksystemlog
+      kdePackages.sddm-kcm
+      # kdePackages.krdp
+      kdiff3
+      # clipboards
+      # wayland-utils
+      wl-clipboard
+      xclip
+      xdg-desktop-portal
+    ];
+    plasma6.excludePackages = with pkgs; [
+      kdePackages.kpat
+      kdePackages.kmines
+      kdePackages.kmahjongg
+      kdePackages.ksudoku
+    ];
+  };
 
   # Some programs need SUID wrappers, can be configured further or are
   # started in user sessions.
@@ -203,8 +205,6 @@
   #   enableSSHSupport = true;
   # };
 
-  nix.settings.experimental-features = [ "nix-command" "flakes" ];
   # (e.g. man configuration.nix or on https://nixos.org/nixos/options.html).
   system.stateVersion = "26.05";
-
 }
