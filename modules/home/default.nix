@@ -1,8 +1,17 @@
-{config, pkgs, ...}:
+# modules/home/default.nix
+{ config, pkgs, lib, ... }:
 
 {
-  home.username = "sab131x";
-  home.homeDirectory = "/home/sab131x";
+  # Standard home manager settings, 
+  # they tell it which user is using it and where to install stuff
+  home = {
+    username = "sab131x";
+    homeDirectory = "/home/sab131x";
+    # this setting removes the warning if your home manager
+    # is newer or older than the rest of the system
+    enableNixpkgsReleaseCheck = false;
+  };
+  # List of software to install in home directory
   programs = {
     git = {
       enable = true;

@@ -1,4 +1,4 @@
-{ pkgs, inputs, ... }:
+{ config, pkgs, inputs, ... }:
 
 {
   imports =
@@ -14,6 +14,7 @@
     };
     # Use latest kernel.
     kernelPackages = pkgs.linuxPackages_latest;
+    # ZRAM swap tweaks
     kernel.sysctl = {
       "vm.swappiness" = 180;
       "vm.vfs_cache_pressure" = 50;
@@ -28,19 +29,16 @@
     memoryPercent = 50;
   };
 
-  hardware.bluetooth = {
-    enable = true;
-    powerOnBoot = true;
-  };
-
   networking = {
+    # That's your terminal invitation and it also shows in the network you're connected to.
+    # Preferebly don't have same hostName on different hosts to avoid network collisions.
     hostName = "nixltp";
     # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
     networkmanager.enable = true;
     firewall = {
       enable = true;
-      allowedTCPPorts = [ 3389 ];
-      allowedUDPPorts = [ 24832 3389 ];
+      allowedTCPPorts = [ ];
+      allowedUDPPorts = [ 24832 ];
     };
     # WG Quick / WG client
     wg-quick.interfaces.wg0 = {
@@ -72,53 +70,29 @@
   ];
 
   # Enable KDE Desktop Environment
-  services = {
-    desktopManager.plasma6 = {
-      enable = true;
-    };
-    displayManager.sddm.enable = true;
-    displayManager.sddm.wayland.enable = true;
+  kde = {
+    krdp.enable = true;
+    bluedevil.enable = true;
+    audio.enable = true;
   };
-
-  xdg.portal = {
-    enable = true;
-    extraPortals = [ pkgs.kdePackages.xdg-desktop-portal-kde ];
-  };
-
+  # Support for printers
   services.printing.enable = true;
-
-  # Enable sound with pipewire.
-  security.rtkit.enable = true;
-  services = {
-    pulseaudio.enable = false;
-    pipewire = {
-      enable = true;
-      alsa.enable = true;
-      alsa.support32Bit = true;
-      pulse.enable = true;
-    };
-  };
-    # If you want to use JACK applications, uncomment this
-    #jack.enable = true;
-
-    # use the example session manager (no others are packaged yet so this is enabled by default,
-    # no need to redefine it in your config for now)
-    #media-session.enable = true;
 
   # Define a user account. Don't forget to set a password with ‘passwd’.
   users.users."sab131x" = {
     isNormalUser = true;
     description = "SaB131X";
+    # wheel lets you use SUDO and networkmanager here is to manage network
     extraGroups = [ "networkmanager" "wheel" ];
     shell = pkgs.zsh;
   };
-
+  # Call home-manager here to declare nixdatifier (i plan to move it away later)
   home-manager.users."sab131x" = { ... }: {
     imports = [
       inputs.nixdatifier.homeManagerModules.default
     ];
-    programs.nixdatifier = { 
-      enable = true;   
+    programs.nixdatifier = {
+      enable = true;
       autostart = true;
     };
   };
@@ -136,30 +110,10 @@
 
   # Allow unfree packages
   nixpkgs.config.allowUnfree = true;
-
+  # this option makes your flake.lock autoupdate every time you do a rebuild
   system.autoUpgrade = {
     enable = true;
     dates = "weekly";
-  };
-
-  nix = {
-    settings = {
-      substitute = true;
-      always-allow-substitutes = true;
-      auto-optimise-store = true;
-      extra-substituters = [
-        "https://nix-community.cachix.org"
-        # "https://mirror.sjtu.edu.cn/nix-channels/store"
-        # "https://mirrors.ustc.edu.cn/nix-channels/store"
-        # "https://mirrors.tuna.tsinghua.edu.cn/nix-channels/store"
-        "https://yazi.cachix.org"
-      ];
-      extra-trusted-public-keys = [
-        "nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs="
-        "yazi.cachix.org-1:Dcdz63NZKfvUCbDGngQDAZq6kOroIrFoyO064uvLh8k="
-      ];
-      experimental-features = [ "nix-command" "flakes" ];
-    };
   };
 
   environment = {
@@ -172,28 +126,6 @@
       # LSPs
       nil
       csharp-ls
-      # IDE
-
-      # KDE Utils
-      kdePackages.bluedevil
-      kdePackages.kcalc
-      kdePackages.kcharselect
-      kdePackages.kclock
-      kdePackages.ksystemlog
-      kdePackages.sddm-kcm
-      # kdePackages.krdp
-      kdiff3
-      # clipboards
-      # wayland-utils
-      wl-clipboard
-      xclip
-      xdg-desktop-portal
-    ];
-    plasma6.excludePackages = with pkgs; [
-      kdePackages.kpat
-      kdePackages.kmines
-      kdePackages.kmahjongg
-      kdePackages.ksudoku
     ];
   };
 

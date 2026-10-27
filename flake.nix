@@ -1,7 +1,11 @@
+# flake.nix
 {
+  # Each flake.nix file contains Inputs (package sources) and outputs (what to build).
+  # In inputs we declare package sources
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-26.05";
     nixpkgs-u.url = "github:NixOS/nixpkgs/nixos-unstable";
+    nixos-wsl.url = "github:nix-community/nixos-wsl";
     home-manager = {
       url = "github:nix-community/home-manager";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -11,28 +15,72 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
   };
-  outputs = { self, nixpkgs, home-manager, nixdatifier, ...}@inputs: {
+  # In outputs we declare hosts, packages and other stuff
+  # that we get using these packages from inputs
+  # in first line we just pass all sources from inputs to the local variable called inputs
+  outputs = { self, nixpkgs, nixpkgs-u, nixos-wsl, home-manager, nixdatifier, ...}@inputs: {
+    # nixosConfigurations is used to declare hosts that will be avaliable under 
+    # in nixos-rebuild switch --flake .#hostName
     nixosConfigurations = {
       laptop = nixpkgs.lib.nixosSystem {
+        # That parameter tells nix which packages to use 
+        # (for x86/x64, aarch (ARM) or darvin (apple@co stuff) CPU's)
         system = "x86_64-linux";
-        specialArgs = {
-          inherit inputs;
-        };
+        # That line tells nix that it should pass inputs to everything stated in modules
+        specialArgs = { inherit inputs; };
+        # Here you declare which modules that host should use 
         modules = [
           ./hosts/laptop
+          ./modules/nix
+          ./modules/desktopEnv/kde
+          # That's the Home Manager installation as a flake module 
           home-manager.nixosModules.home-manager
           {
             home-manager = {
+              # We pass inputs once more but this time to the Home Manager
               extraSpecialArgs = {
-                  inherit inputs;
+                inherit inputs;
               };
+              # These 2 settings tell nix to use existing packages if possible
               useGlobalPkgs = true;
               useUserPackages = true;
+              # That one tells where the Home Manager module is
               users.sab131x = import ./modules/home;
               backupFileExtension = "backup";
             };
           }
         ];
+      };
+      wsl = nixpkgs-u.lib.nixosSystem {
+        system = "x86_64-linux";
+        specialArgs = { inherit inputs; };
+        modules = [
+          ./hosts/wsl
+          ./modules/nix
+          # That's a special module for wsl because without it nix doesn't builds on wsl
+          nixos-wsl.nixosModules.wsl
+        ];
+      };
+    };
+
+    # FAST CHECK (CI & LOCAL)
+    # That part let's us use nix flake check to see if everything is fine or not
+    checks = {
+      x86_64-linux = let
+        # Func: make "fake" drv, which forces all cfg eval,
+        # Output: file with path to the .drv file.
+        evalCheck = name: config:
+          let
+            # Here we ask system to give drvPath which means that it must calculate everything first
+            drvPath = config.config.system.build.toplevel.drvPath;
+          in
+          nixpkgs.legacyPackages.x86_64-linux.runCommand "${name}-eval-check" {} ''
+            echo "Evaluated ${name}: ${drvPath}" > $out
+          '';
+      in {
+        # Here we run our tests
+        laptop = evalCheck "laptop" self.nixosConfigurations.laptop;
+        wsl = evalCheck "wsl" self.nixosConfigurations.wsl;
       };
     };
   };
