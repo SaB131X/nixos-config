@@ -33,6 +33,7 @@
           ./hosts/laptop
           ./modules/nix
           ./modules/desktopEnv/kde
+          ./modules/hardware/GPUs/nvidia
           ./modules/deploy
           # That's the Home Manager installation as a flake module 
           home-manager.nixosModules.home-manager
@@ -75,6 +76,7 @@
       deploy = import ./modules/deploy;
       nix = import ./modules/nix;
       kde = import ./modules/desktopEnv/kde;
+      nvidia = import ./modules/hardware/GPUs/nvidia;
     };
 
     # FAST CHECK (CI & LOCAL)
@@ -122,6 +124,7 @@
         deploy = moduleCheck "deploy" self.nixosModules.deploy;
         nix = moduleCheck "nix" self.nixosModules.nix;
         kde = moduleCheck "kde" self.nixosModules.kde;
+        nvidia = moduleCheck "nvidia" self.nixosModules.nvidia;
       };
     };
   };
