@@ -64,6 +64,19 @@
       };
     };
 
+    # Here i expose flake modules that you can use by either
+    # adding it to the Flake.nix:
+    # 1. inputs = { sbxflake.url ="github:SaB131X/nixos-config";}
+    # 2. modules [sbxflake.nixosModules.kde];
+    # adding it to the Configuration.nix:
+    # 1. imports = [inputs.sbxflake.nixosModules.kde]; (if you haven't added it in flake module; adding it in the inputs is still required)
+    # 2. kde.audio.enable = true;
+    nixosModules = {
+      deploy = import ./modules/deploy;
+      nix = import ./modules/nix;
+      kde = import ./modules/desktopEnv/kde;
+    };
+
     # FAST CHECK (CI & LOCAL)
     # That part let's us use nix flake check to see if everything is fine or not
     checks = {
@@ -78,10 +91,29 @@
           nixpkgs.legacyPackages.x86_64-linux.runCommand "${name}-eval-check" {} ''
             echo "Evaluated ${name}: ${drvPath}" > $out
           '';
+        moduleCheck = name: module:
+          let
+            # make minimal system
+            testConfig = nixpkgs.lib.nixosSystem {
+              system = "x86_64-linux";
+              modules = [
+                module
+              ];
+            };
+            # Same trick here
+            drvPath = testConfig.config.system.build.toplevel.drvPath;
+          in
+          nixpkgs.legacyPackages.x86_64-linux.runCommand "${name}-module-check" {} ''
+            echo "Module evaluated ${name}: ${drvPath}" > $out
+          '';
       in {
         # Here we run our tests
         laptop = evalCheck "laptop" self.nixosConfigurations.laptop;
         wsl = evalCheck "wsl" self.nixosConfigurations.wsl;
+        # New Modules
+        deploy = moduleCheck "deploy" self.nixosModules.deploy;
+        nix = moduleCheck "nix" self.nixosModules.nix;
+        kde = moduleCheck "kde" self.nixosModules.kde;
       };
     };
   };

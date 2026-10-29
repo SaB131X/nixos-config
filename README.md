@@ -8,5 +8,7 @@ That repo follows basic multi host flake design with separate host and modules d
 - hosts [dir] - contains `default.nix` and `hardware-configuration.nix` (if any) files for each host (physical machine). 
 - modules [dir] - contains `default.nix` files for speciefic modules (parts) of hosts.
 - scripts [dir] - contains useful scripts for CI or daily use.
-
+## Accessible Modules
+You can access most modules from that repo by adding it to the flake inputs `inputs = { sbxflake.url ="github:SaB131X/nixos-config";}` and then referencing it in nixosConfigurations of the flake `modules [sbxflake.nixosModules.kde];` or Configuration.nix file `imports = [inputs.sbxflake.nixosModules.kde];` and then using `kde.audio.enable = true` in your own modules.
+## PS
 I don't plan on using flake-parts or something bizzare for now so you may use it if you just start your way in nix as an example and improve it with crazy community libs later.
