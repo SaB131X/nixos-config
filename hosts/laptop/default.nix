@@ -32,8 +32,7 @@
   };
 
   # Nvidia RTX 4070 support
-  services.xserver.videoDrivers = [ "nvidia" ];
-  hardware.nvidia.open = true;
+  nvidia.laptop.enable = true;
 
   networking = {
     # That's your terminal invitation and it also shows in the network you're connected to.
