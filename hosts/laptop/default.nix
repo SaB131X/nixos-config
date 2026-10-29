@@ -29,6 +29,10 @@
     memoryPercent = 50;
   };
 
+  # Nvidia RTX 4070 support
+  services.xserver.videoDrivers = [ "nvidia" ];
+  hardware.nvidia.open = true;
+
   networking = {
     # That's your terminal invitation and it also shows in the network you're connected to.
     # Preferebly don't have same hostName on different hosts to avoid network collisions.

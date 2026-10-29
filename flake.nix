@@ -33,6 +33,7 @@
           ./hosts/laptop
           ./modules/nix
           ./modules/desktopEnv/kde
+          ./modules/deploy
           # That's the Home Manager installation as a flake module 
           home-manager.nixosModules.home-manager
           {
