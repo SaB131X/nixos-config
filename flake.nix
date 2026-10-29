@@ -93,11 +93,19 @@
           '';
         moduleCheck = name: module:
           let
-            # make minimal system
+            # make minimal fictional system
             testConfig = nixpkgs.lib.nixosSystem {
               system = "x86_64-linux";
               modules = [
                 module
+                {
+                  fileSystems."/" = nixpkgs.lib.mkDefault {
+                    device = "none";
+                    fsType = "tmpfs";
+                  };
+                  boot.loader.grub.devices = nixpkgs.lib.mkDefault [ "nodev" ];
+                  system.stateVersion = nixpkgs.lib.mkDefault "26.05";
+                }
               ];
             };
             # Same trick here
