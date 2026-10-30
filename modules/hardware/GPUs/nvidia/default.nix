@@ -1,6 +1,18 @@
 # modules/hardware/GPUs/nvidia/default.nix
 { lib, config, pkgs, ... }:
 
+let
+  unstablePkgs =
+    if pkgs-unstable != null then pkgs-unstable
+    else import (builtins.fetchTarball {
+      url = "https://github.com/NixOS/nixpkgs/archive/nixos-unstable.tar.gz";
+      # sha256 = "..."; # для воспроизводимости лучше зафиксировать
+    }) {
+      inherit (pkgs.stdenv.hostPlatform) system;
+      config.allowUnfree = true;
+    };
+in
+
 {
   # here we declare options which we'll use in hosts/laptop/default.nix
   options.nvidia = {
@@ -28,7 +40,10 @@
           enable32Bit = true;
         };
         # Suggest open source drivers as well, good for GTX16xx and newer
-        nvidia.open = lib.mkDefault true;
+        nvidia = {
+          package = lib.mkDefault unstablePkgs.linuxPackages.nvidiaPackages.stable;
+          open = lib.mkDefault true;
+        };
       };
       # Set NVIDIA driver for X11/Wayland
       services.xserver.videoDrivers = [ "nvidia" ];
