@@ -6,7 +6,7 @@ let
     if args ? pkgs-unstable then args.pkgs-unstable
     else import (builtins.fetchTarball {
       url = "https://github.com/NixOS/nixpkgs/archive/nixos-unstable.tar.gz";
-      sha256 = "0000000000000000000000000000000000000000000000000000"; # Required
+      sha256 = "dhoW6VgFWlaodSY5jrBn+CF2FLmaUvDVgM7+C7T2+NM="; # Required
     }) {
       inherit (pkgs.stdenv.hostPlatform) system;
       config.allowUnfree = true;
