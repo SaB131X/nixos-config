@@ -27,7 +27,13 @@
         # (for x86/x64, aarch (ARM) or darvin (apple@co stuff) CPU's)
         system = "x86_64-linux";
         # That line tells nix that it should pass inputs to everything stated in modules
-        specialArgs = { inherit inputs; };
+        specialArgs = { 
+          inherit inputs;
+          pkgs-unstable = import nixpkgs-u {
+            system = "x86_64-linux";
+            config.allowUnfree = true;
+          };
+        };
         # Here you declare which modules that host should use 
         modules = [
           ./hosts/laptop
