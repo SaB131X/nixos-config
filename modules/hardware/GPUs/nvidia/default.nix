@@ -32,10 +32,10 @@
           package = lib.mkDefault (config.boot.kernelPackages.nvidiaPackages.mkDriver {
             # New Driver for GTX16s+
             version = "615.78.08";
-            sha256_64bit = "sha256-R4b2D+j992n178zQxXm4Rk8wN8w2V0m8Rk8fG4m8xMw=";
-            settingsSha256 = "sha256-4mRk8wN8w2V0m8Rk8fG4m8xMwR4b2D+j992n178zQxX=";
+            sha256_64bit = "sha256-Pj9t3cLudnoIGFMAr3vjyyhuznZpjS3eNSRZl4LQf/4=";
+            settingsSha256 = "sha256-inDRpG02sdDgHmlqgu/DsgK8OFdOt1fZIYyXdhlGC/c=";
             # Hash for open modules (open-gpu-kernel-modules)
-            openSha256 = "sha256-V00m8Rk8fG4m8xMwR4b2D+j992n178zQxXm4Rk8wN8w=";
+            openSha256 = "sha256-HBINiOjL0ZJLIAJeNIBYHBnwgUXtNwPPtnFpAI1YwF4=";
             persistencedSha256 = "sha256-RzeR6Ldct6MUxjnXRyThdh5Y3jjMehTVg85MtwuWNX4=";
             usePersistenced = false;
           });
