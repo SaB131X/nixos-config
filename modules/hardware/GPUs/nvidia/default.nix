@@ -41,7 +41,7 @@ in
         };
         # Suggest open source drivers as well, good for GTX16xx and newer
         nvidia = {
-          package = lib.mkDefault unstablePkgs.linuxPackages.nvidiaPackages.stable;
+          package = lib.mkDefault pkgs-unstable.linuxPackages.nvidiaPackages.stable;
           open = lib.mkDefault true;
         };
       };
