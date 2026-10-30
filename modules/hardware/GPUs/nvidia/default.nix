@@ -1,5 +1,5 @@
 # modules/hardware/GPUs/nvidia/default.nix
-{ lib, config, pkgs, ... }:
+{ lib, config, pkgs, pkgs-unstable, ... }:
 
 let
   unstablePkgs =
