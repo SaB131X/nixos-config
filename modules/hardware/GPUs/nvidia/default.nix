@@ -1,17 +1,5 @@
 # modules/hardware/GPUs/nvidia/default.nix
-{ lib, config, pkgs, ... }@args:
-
-let
-  pkgs-unstable =
-    if args ? pkgs-unstable then args.pkgs-unstable
-    else import (builtins.fetchTarball {
-      url = "https://github.com/NixOS/nixpkgs/archive/nixos-unstable.tar.gz";
-      sha256 = "dhoW6VgFWlaodSY5jrBn+CF2FLmaUvDVgM7+C7T2+NM="; # Required
-    }) {
-      inherit (pkgs.stdenv.hostPlatform) system;
-      config.allowUnfree = true;
-    };
-in
+{ lib, config, pkgs, ... }:
 
 {
   # here we declare options which we'll use in hosts/laptop/default.nix
@@ -41,7 +29,16 @@ in
         };
         # Suggest open source drivers as well, good for GTX16xx and newer
         nvidia = {
-          package = lib.mkDefault pkgs-unstable.linuxPackages.nvidiaPackages.stable;
+          package = lib.mkDefault (config.boot.kernelPackages.nvidiaPackages.mkDriver {
+            # New Driver for GTX16s+
+            version = "615.78.08";
+            sha256_64bit = "sha256-R4b2D+j992n178zQxXm4Rk8wN8w2V0m8Rk8fG4m8xMw=";
+            settingsSha256 = "sha256-4mRk8wN8w2V0m8Rk8fG4m8xMwR4b2D+j992n178zQxX=";
+            # Hash for open modules (open-gpu-kernel-modules)
+            openSha256 = "sha256-V00m8Rk8fG4m8xMwR4b2D+j992n178zQxXm4Rk8wN8w=";
+            persistencedSha256 = "sha256-RzeR6Ldct6MUxjnXRyThdh5Y3jjMehTVg85MtwuWNX4=";
+            usePersistenced = false;
+          });
           open = lib.mkDefault true;
         };
       };
@@ -62,6 +59,8 @@ in
           enable = true;
           finegrained = true; # Turns off GPU power completely when idle
         };
+        # Lets PRIME completely disable dGPU
+        nvidiaPersistenced = false;
         # PRIME Offload
         prime = {
           offload = {
@@ -77,6 +76,15 @@ in
       hardware.nvidia = {
         open = false;
         branch = "legacy_580";
+        # Builds the driver pkg for GTX10s (Tested) or older
+        package = lib.mkDefault (config.boot.kernelPackages.nvidiaPackages.mkDriver {
+          version = "580.178.04";
+          sha256_64bit = "sha256-WXWobuRb/8tib1GuM9EWmxCBhqLqR61lHnLxP6S21vk=";
+          sha256_aarch64 = ""; # not fetched
+          openSha256 = ""; # not fetched
+          settingsSha256 = "sha256-KcrGHoR+ZMdsFyI4myU8/eVls2f8GkNSX/j2JnZndyM=";
+          usePersistenced = false;
+        });
       };
     })
   ];
