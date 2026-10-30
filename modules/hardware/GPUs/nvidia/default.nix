@@ -1,12 +1,12 @@
 # modules/hardware/GPUs/nvidia/default.nix
-{ lib, config, pkgs, pkgs-unstable, ... }:
+{ lib, config, pkgs, ... }@args:
 
 let
-  unstablePkgs =
-    if pkgs-unstable != null then pkgs-unstable
+  pkgs-unstable =
+    if args ? pkgs-unstable then args.pkgs-unstable
     else import (builtins.fetchTarball {
       url = "https://github.com/NixOS/nixpkgs/archive/nixos-unstable.tar.gz";
-      # sha256 = "..."; # для воспроизводимости лучше зафиксировать
+      # sha256 = "0000000000000000000000000000000000000000000000000000"; # зафиксируйте!
     }) {
       inherit (pkgs.stdenv.hostPlatform) system;
       config.allowUnfree = true;
