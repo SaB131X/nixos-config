@@ -14,6 +14,7 @@
       url = "github:Muddyblack/nixdatifier";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    nix-flatpak.url = "github:gmodena/nix-flatpak/?ref=latest";
   };
   # In outputs we declare hosts, packages and other stuff
   # that we get using these packages from inputs
@@ -43,7 +44,8 @@
           ./modules/hardware/zramswap
           ./modules/network/zapret2
           ./modules/deploy
-          ./modules/apps/flatpack/LinOffice
+          # ./modules/apps/flatpack/LinOffice
+          nix-flatpak.homeManagerModules.nix-flatpak
           # That's the Home Manager installation as a flake module 
           home-manager.nixosModules.home-manager
           {
@@ -135,7 +137,7 @@
       nvidia = import ./modules/hardware/GPUs/nvidia;
       amdgpu = import ./modules/hardware/GPUs/amdgpu;
       zramswap = import ./modules/hardware/zramswap;
-      LinOffice = import ./modules/apps/flatpack/LinOffice;
+      # LinOffice = import ./modules/apps/flatpack/LinOffice;
     };
 
     # FAST CHECK (CI & LOCAL)
@@ -187,7 +189,7 @@
         nvidia = moduleCheck "nvidia" self.nixosModules.nvidia;
         amdgpu = moduleCheck "amdgpu" self.nixosModules.amdgpu;
         zramswap = moduleCheck "zramswap" self.nixosModules.zramswap;
-        LinOffice = moduleCheck "LinOffice" self.nixosModules.LinOffice;
+        # LinOffice = moduleCheck "LinOffice" self.nixosModules.LinOffice;
       };
     };
   };
