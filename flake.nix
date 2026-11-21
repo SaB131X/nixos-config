@@ -14,7 +14,7 @@
       url = "github:Muddyblack/nixdatifier";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    nix-flatpak.url = "github:gmodena/nix-flatpak/?ref=latest";
+    # nix-flatpak.url = "github:gmodena/nix-flatpak/?ref=latest";
   };
   # In outputs we declare hosts, packages and other stuff
   # that we get using these packages from inputs
@@ -45,7 +45,7 @@
           ./modules/network/zapret2
           ./modules/deploy
           # ./modules/apps/flatpack/LinOffice
-          nix-flatpak.homeManagerModules.nix-flatpak
+          # nix-flatpak.homeManagerModules.nix-flatpak
           # That's the Home Manager installation as a flake module 
           home-manager.nixosModules.home-manager
           {
