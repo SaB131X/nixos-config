@@ -7,10 +7,6 @@
     old.enable = lib.mkEnableOption "Enable support for older Nvidia GPUs";
     laptop.enable = lib.mkEnableOption "Enables extreme power saving mode. GPU IS USED ONLY WHEN CALLED nvidia-offload";
   };
-  imports = 
-    [ 
-       
-    ];
   # Each file in nix is options + config underhood.
   # options make options, config apply them.
   # By default when you don't use them you just use nixpkgs as a source of options,

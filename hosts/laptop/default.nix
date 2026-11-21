@@ -16,21 +16,8 @@
     };
     # Use latest kernel.
     kernelPackages = pkgs.linuxPackages_latest;
-    # ZRAM swap tweaks
-    kernel.sysctl = {
-      "vm.swappiness" = 180;
-      "vm.vfs_cache_pressure" = 50;
-    };
   };
-
-  # ZRAM setup
-  zramSwap = {
-    enable = true;
-    priority = 100;
-    algorithm = "lz4";
-    memoryPercent = 50;
-  };
-
+  
   # Nvidia RTX 4070 support
   nvidia.laptop.enable = true;
 
@@ -52,7 +39,7 @@
   };
 
   # Set your time zone.
-  time.timeZone = "Australia/Perth";
+  time.timeZone = "Etc/GMT-7";
 
   # Select internationalisation properties.
   i18n.defaultLocale = "en_US.UTF-8";

@@ -1,0 +1,17 @@
+eor.stu.ru
+nsu.ru
+ozon.ru
+dns-shop.ru
+vk.com
+hh.ru
+novosibirsk.hh.ru
+www.gosuslugi.ru
+esia.gosuslugi.ru
+mozilla.cloudflare-dns.com
+react.dev
+registry.npmjs.org
+api.iconify.design
+npmjs.com5922505.fls.doubleclick.net
+yandex.ru
+favicon.yandex.net
+i9.ytimg.com

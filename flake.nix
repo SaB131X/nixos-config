@@ -40,7 +40,57 @@
           ./modules/nix
           ./modules/desktopEnv/kde
           ./modules/hardware/GPUs/nvidia
+          ./modules/hardware/zramswap
+          ./modules/network/zapret2
           ./modules/deploy
+          ./modules/apps/flatpack/LinOffice
+          # That's the Home Manager installation as a flake module 
+          home-manager.nixosModules.home-manager
+          {
+            home-manager = {
+              # We pass inputs once more but this time to the Home Manager
+              extraSpecialArgs = {
+                inherit inputs;
+              };
+              # These 2 settings tell nix to use existing packages if possible
+              useGlobalPkgs = true;
+              useUserPackages = true;
+              # That one tells where the Home Manager module is
+              users.sab131x = import ./modules/home;
+              backupFileExtension = "backup";
+            };
+          }
+        ];
+      };
+      workstation = nixpkgs-u.lib.nixosSystem {
+        # That parameter tells nix which packages to use 
+        # (for x86/x64, aarch (ARM) or darvin (apple@co stuff) CPU's)
+        system = "x86_64-linux";
+        # That line tells nix that it should pass inputs to everything stated in modules
+        specialArgs = { 
+          inherit inputs;
+          pkgs-unstable = import nixpkgs-u {
+            system = "x86_64-linux";
+            config.allowUnfree = true;
+          };
+        };
+        # Here you declare which modules that host should use 
+        modules = [
+          ./hosts/workstation
+          ./modules/nix
+          ./modules/desktopEnv/kde
+          ./modules/hardware/GPUs/amdgpu
+          ./modules/hardware/zramswap
+          ./modules/network/zapret2
+          ./modules/deploy
+          # Temp stuff untill i install nixos on ws
+          {
+            fileSystems."/" = nixpkgs.lib.mkDefault {
+              device = "none";
+              fsType = "tmpfs";
+            };
+            boot.loader.grub.devices = nixpkgs.lib.mkDefault [ "nodev" ];
+          }
           # That's the Home Manager installation as a flake module 
           home-manager.nixosModules.home-manager
           {
@@ -79,10 +129,13 @@
     # 1. imports = [inputs.sbxflake.nixosModules.kde]; (if you haven't added it in flake module; adding it in the inputs is still required)
     # 2. kde.audio.enable = true;
     nixosModules = {
-      deploy = import ./modules/deploy;
       nix = import ./modules/nix;
+      deploy = import ./modules/deploy;
       kde = import ./modules/desktopEnv/kde;
       nvidia = import ./modules/hardware/GPUs/nvidia;
+      amdgpu = import ./modules/hardware/GPUs/amdgpu;
+      zramswap = import ./modules/hardware/zramswap;
+      LinOffice = import ./modules/apps/flatpack/LinOffice;
     };
 
     # FAST CHECK (CI & LOCAL)
@@ -125,12 +178,16 @@
       in {
         # Here we run our tests
         laptop = evalCheck "laptop" self.nixosConfigurations.laptop;
+        workstation = evalCheck "workstation" self.nixosConfigurations.workstation;
         wsl = evalCheck "wsl" self.nixosConfigurations.wsl;
         # New Modules
-        deploy = moduleCheck "deploy" self.nixosModules.deploy;
         nix = moduleCheck "nix" self.nixosModules.nix;
+        deploy = moduleCheck "deploy" self.nixosModules.deploy;
         kde = moduleCheck "kde" self.nixosModules.kde;
         nvidia = moduleCheck "nvidia" self.nixosModules.nvidia;
+        amdgpu = moduleCheck "amdgpu" self.nixosModules.amdgpu;
+        zramswap = moduleCheck "zramswap" self.nixosModules.zramswap;
+        LinOffice = moduleCheck "LinOffice" self.nixosModules.LinOffice;
       };
     };
   };
