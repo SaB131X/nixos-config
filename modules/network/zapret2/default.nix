@@ -4,7 +4,7 @@
 
 {
   imports = [
-    "${pkgs-unstable}/nixos/modules/services/networking/zapret2.nix"
+    "${pkgs-unstable.path}/nixos/modules/services/networking/zapret2.nix"
   ];
   services.zapret2 = {
     enable = true;
