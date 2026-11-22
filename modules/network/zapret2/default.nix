@@ -1,18 +1,18 @@
 # modules/network/zapret2/default.nix
-{ lib, config, pkgs-unstable, ... }:
+{ lib, config, inputs, ... }:
 # Requires nixpkgs with services.zapret2 (unstable / 26.11+).
 
 {
   imports = [
-    "${pkgs-unstable.path}/nixos/modules/services/networking/zapret2.nix"
+    "${inputs.nixpkgs-u}/nixos/modules/services/networking/zapret2.nix"
   ];
   services.zapret2 = {
     enable = true;
-    package = pkgs-unstable.zapret2;
+    package = inputs.nixpkgs-u.legacyPackages.x86_64-linux.zapret2;
 
     extraOptions = [
       # bundled with zapret2 itself, no need to keep a copy in ./files
-      "--blob=quic_google:${pkgs-unstable.zapret2}/share/zapret2/files/fake/quic_initial_www_google_com.bin"
+      "--blob=quic_google:${inputs.nixpkgs-u.legacyPackages.x86_64-linux.zapret2}/share/zapret2/files/fake/quic_initial_www_google_com.bin"
       # runs after the default lua libs (extraOptions comes last)
       "--lua-init=fake_default_tls = tls_mod(fake_default_tls,'rnd,rndsni')"
     ];
