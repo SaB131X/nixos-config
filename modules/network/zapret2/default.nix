@@ -1,8 +1,11 @@
 # modules/network/zapret2/default.nix
-{ lib, config, pkgs-unstable, ... }:
+{ lib, config, nixpkgs-unstable, pkgs-unstable, ... }:
 # Requires nixpkgs with services.zapret2 (unstable / 26.11+).
 
 {
+  imports = [
+    "${nixpkgs-unstable}/nixos/modules/services/networking/zapret2.nix"
+  ];
   services.zapret2 = {
     enable = true;
     package = pkgs-unstable.zapret2;
