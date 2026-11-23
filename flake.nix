@@ -169,6 +169,9 @@
               specialArgs = { inherit inputs; };
               modules = [
                 {
+                  users.users."sab131x" = {
+                    isNormalUser = true;
+                  };
                   fileSystems."/" = nixpkgs.lib.mkDefault {
                     device = "none";
                     fsType = "tmpfs";
@@ -206,6 +209,9 @@
               modules = [
                 module
                 {
+                  users.users."sab131x" = {
+                    isNormalUser = true;
+                  };
                   fileSystems."/" = nixpkgs.lib.mkDefault {
                     device = "none";
                     fsType = "tmpfs";
