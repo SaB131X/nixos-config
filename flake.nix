@@ -160,6 +160,77 @@
           nixpkgs.legacyPackages.x86_64-linux.runCommand "${name}-module-check" {} ''
             echo "Module evaluated ${name}: ${drvPath}" > $out
           '';
+        homeModuleCheck = name: homeModule:
+          let
+            # make minimal fictional system
+            testConfig = nixpkgs.lib.nixosSystem {
+              system = "x86_64-linux";
+              modules = [
+                {
+                  fileSystems."/" = nixpkgs.lib.mkDefault {
+                    device = "none";
+                    fsType = "tmpfs";
+                  };
+                  boot.loader.grub.devices = nixpkgs.lib.mkDefault [ "nodev" ];
+                  system.stateVersion = nixpkgs.lib.mkDefault "26.05";
+                }
+                home-manager.nixosModules.home-manager
+                {
+                  home-manager = {
+                    # We pass inputs once more but this time to the Home Manager
+                    extraSpecialArgs = { inherit inputs; };
+                    # These 2 settings tell nix to use existing packages if possible
+                    useGlobalPkgs = true;
+                    useUserPackages = true;
+                    # That one tells where the Home Manager module is
+                    users.sab131x = import homeModule;
+                    backupFileExtension = "backup";
+                  };
+                }
+              ];
+            };
+            # Same trick here
+            drvPath = testConfig.config.system.build.toplevel.drvPath;
+          in
+          nixpkgs.legacyPackages.x86_64-linux.runCommand "${name}-module-check" {} ''
+            echo "Home Module evaluated ${name}: ${drvPath}" > $out
+          '';
+        moduleForHomeCheck = name: module:
+          let
+            # make minimal fictional system
+            testConfig = nixpkgs.lib.nixosSystem {
+              system = "x86_64-linux";
+              modules = [
+                module
+                {
+                  fileSystems."/" = nixpkgs.lib.mkDefault {
+                    device = "none";
+                    fsType = "tmpfs";
+                  };
+                  boot.loader.grub.devices = nixpkgs.lib.mkDefault [ "nodev" ];
+                  system.stateVersion = nixpkgs.lib.mkDefault "26.05";
+                }
+                home-manager.nixosModules.home-manager
+                {
+                  home-manager = {
+                    # We pass inputs once more but this time to the Home Manager
+                    extraSpecialArgs = { inherit inputs; };
+                    # These 2 settings tell nix to use existing packages if possible
+                    useGlobalPkgs = true;
+                    useUserPackages = true;
+                    # That one tells where the Home Manager module is
+                    users.sab131x = import ./modules/home;
+                    backupFileExtension = "backup";
+                  };
+                }
+              ];
+            };
+            # Same trick here
+            drvPath = testConfig.config.system.build.toplevel.drvPath;
+          in
+          nixpkgs.legacyPackages.x86_64-linux.runCommand "${name}-module-check" {} ''
+            echo "Home Module evaluated ${name}: ${drvPath}" > $out
+          '';
       in {
         # Here we run our tests
         laptop = evalCheck "laptop" self.nixosConfigurations.laptop;
@@ -172,7 +243,7 @@
         nvidia = moduleCheck "nvidia" self.nixosModules.nvidia;
         amdgpu = moduleCheck "amdgpu" self.nixosModules.amdgpu;
         zramswap = moduleCheck "zramswap" self.nixosModules.zramswap;
-        LinOffice = moduleCheck "LinOffice" self.nixosModules.LinOffice;
+        LinOffice = moduleForHomeCheck "LinOffice" self.nixosModules.LinOffice;
       };
     };
   };
