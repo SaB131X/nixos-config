@@ -20,6 +20,7 @@
       podman-compose
     ];
     services.flatpak.enable = lib.mkDefault true;
+    xdg.portal.enable = lib.mkDefault true;
     users.users = lib.genAttrs config.apps.linOffice.users (username: { ... }: {
       extraGroups = [ "kvm" "podman" ];
     });
@@ -42,6 +43,9 @@
             location = "https://eylenburg.github.io/linoffice/index.flatpakrepo";
           }
         ];
+      };
+      home.sessionVariables = {
+        XDG_DATA_DIRS = "$XDG_DATA_DIRS:$HOME/.local/share/flatpak/exports/share";
       };
     });
   };
