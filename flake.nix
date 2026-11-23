@@ -14,7 +14,7 @@
       url = "github:Muddyblack/nixdatifier";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    # nix-flatpak.url = "github:gmodena/nix-flatpak/?ref=latest";
+    nix-flatpak.url = "github:gmodena/nix-flatpak/?ref=latest";
   };
   # In outputs we declare hosts, packages and other stuff
   # that we get using these packages from inputs
@@ -28,13 +28,7 @@
         # (for x86/x64, aarch (ARM) or darvin (apple@co stuff) CPU's)
         system = "x86_64-linux";
         # That line tells nix that it should pass inputs to everything stated in modules
-        specialArgs = { 
-          inherit inputs;
-          pkgs-unstable = import nixpkgs-u {
-            system = "x86_64-linux";
-            config.allowUnfree = true;
-          };
-        };
+        specialArgs = { inherit inputs; };
         # Here you declare which modules that host should use 
         modules = [
           ./hosts/laptop
@@ -44,16 +38,13 @@
           ./modules/hardware/zramswap
           ./modules/network/zapret2
           ./modules/deploy
-          # ./modules/apps/flatpack/LinOffice
-          # nix-flatpak.homeManagerModules.nix-flatpak
+          ./modules/apps/flatpack/LinOffice
           # That's the Home Manager installation as a flake module 
           home-manager.nixosModules.home-manager
           {
             home-manager = {
               # We pass inputs once more but this time to the Home Manager
-              extraSpecialArgs = {
-                inherit inputs;
-              };
+              extraSpecialArgs = { inherit inputs; };
               # These 2 settings tell nix to use existing packages if possible
               useGlobalPkgs = true;
               useUserPackages = true;
@@ -69,13 +60,7 @@
         # (for x86/x64, aarch (ARM) or darvin (apple@co stuff) CPU's)
         system = "x86_64-linux";
         # That line tells nix that it should pass inputs to everything stated in modules
-        specialArgs = { 
-          inherit inputs;
-          pkgs-unstable = import nixpkgs-u {
-            system = "x86_64-linux";
-            config.allowUnfree = true;
-          };
-        };
+        specialArgs = { inherit inputs; };
         # Here you declare which modules that host should use 
         modules = [
           ./hosts/workstation
@@ -98,9 +83,7 @@
           {
             home-manager = {
               # We pass inputs once more but this time to the Home Manager
-              extraSpecialArgs = {
-                inherit inputs;
-              };
+              extraSpecialArgs = { inherit inputs; };
               # These 2 settings tell nix to use existing packages if possible
               useGlobalPkgs = true;
               useUserPackages = true;
