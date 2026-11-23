@@ -120,7 +120,7 @@
       nvidia = import ./modules/hardware/GPUs/nvidia;
       amdgpu = import ./modules/hardware/GPUs/amdgpu;
       zramswap = import ./modules/hardware/zramswap;
-      # LinOffice = import ./modules/apps/flatpack/LinOffice;
+      LinOffice = import ./modules/apps/flatpack/LinOffice;
     };
 
     # FAST CHECK (CI & LOCAL)
@@ -172,7 +172,7 @@
         nvidia = moduleCheck "nvidia" self.nixosModules.nvidia;
         amdgpu = moduleCheck "amdgpu" self.nixosModules.amdgpu;
         zramswap = moduleCheck "zramswap" self.nixosModules.zramswap;
-        # LinOffice = moduleCheck "LinOffice" self.nixosModules.LinOffice;
+        LinOffice = moduleCheck "LinOffice" self.nixosModules.LinOffice;
       };
     };
   };
