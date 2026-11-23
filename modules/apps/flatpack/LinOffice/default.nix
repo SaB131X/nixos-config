@@ -29,6 +29,7 @@
     xdg.portal = {
       enable = lib.mkDefault true;
       extraPortals = [ config.apps.linOffice.portal ];
+      config.common.default = lib.mkDefault "*";
     };
     users.users = lib.genAttrs config.apps.linOffice.users (username: { ... }: {
       extraGroups = [ "kvm" "podman" ];
