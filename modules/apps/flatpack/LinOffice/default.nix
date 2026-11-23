@@ -12,6 +12,12 @@
       example = [ "sab131x" "alice" ];
       description = "List of users, which will get LinOffice instance from Home Manager";
     };
+    portal = lib.mkOption {
+      type = lib.types.package;
+      default = pkgs.kdePackages.xdg-desktop-portal-kde;
+      example = lib.literalExpression "pkgs.xdg-desktop-portal-gtk";
+      description = "The XDG desktop portal implementation to use for LinOffice (Flatpak). By default uses kde";
+    };
   };
 
   config = lib.mkIf (config.apps.linOffice.users != []) {
@@ -20,7 +26,10 @@
       podman-compose
     ];
     services.flatpak.enable = lib.mkDefault true;
-    xdg.portal.enable = lib.mkDefault true;
+    xdg.portal = {
+      enable = lib.mkDefault true;
+      extraPortals = [ config.apps.linOffice.portal ];
+    };
     users.users = lib.genAttrs config.apps.linOffice.users (username: { ... }: {
       extraGroups = [ "kvm" "podman" ];
     });
